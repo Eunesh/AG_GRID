@@ -1,9 +1,8 @@
-import Table from "./Component/Table";
+import Router from "./Routes/Router";
 function App() {
   return (
     <>
-      <h1>Hello world</h1>
-      <Table />
+      <Router />
     </>
   );
 }
