@@ -1,0 +1,15 @@
+overwrite: true
+schema: "https://staging.fleetpanda.com/graphql"
+documents: "src/!(generated)/**/*.{ts,tsx,graphql,gql}"
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      # withHooks: true
+      # withMutationHook: true
+      # withQueryHook: true
+    hooks:
+      afterOneFileWrite: ["eslint --ext .tsx --fix"]

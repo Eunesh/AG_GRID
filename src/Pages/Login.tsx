@@ -4,7 +4,7 @@ import { Card, Stack, Text, Center } from "@chakra-ui/react";
 
 const Login = () => {
   return (
-    <Center paddingTop={"40px"}>
+    <Center paddingTop={"120px"}>
       <Card width={"35vw"}>
         <Stack spacing={"5px"} padding={"30px 10px"}>
           <Center>
