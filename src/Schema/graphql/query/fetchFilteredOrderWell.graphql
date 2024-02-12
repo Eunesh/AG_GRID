@@ -1,0 +1,27 @@
+query FetchFilteredOrderWell {
+  filteredOrderWell(
+    filter: { fromTimestamp: 1707070500, toTimestamp: 1707156840 }
+  ) {
+    collection {
+      id
+      status
+      type
+      plannedAt
+      customerName
+      customerErpId
+      shipToName
+      address
+      plannedGal
+      createdAtTimestamp
+      driverName
+      deliveredGal
+      supplierNames
+      hubName
+    }
+    metadata {
+      hasMore
+      totalCount
+      total_entries
+    }
+  }
+}

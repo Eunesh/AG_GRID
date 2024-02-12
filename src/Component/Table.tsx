@@ -2,14 +2,18 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import http from "../Axios/Http";
+// import http from "../Axios/Http";
 import { CellClickedEvent } from "ag-grid-community";
 import { Button } from "@chakra-ui/react";
+import {
+  useFetchFilteredOrderWellLazyQuery,
+  // useFetchFilteredOrderWellQuery,
+} from "../generated/graphql";
 
-const URL = "https://randomuser.me/api/";
+// const URL = "https://randomuser.me/api/";
 
 const Table = () => {
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [includeUsername, setIncludeUsername] = useState(true);
   const [error, setError] = useState(null);
@@ -19,13 +23,17 @@ const Table = () => {
     return {
       filter: true,
       sortable: true,
+      resizeable: true,
     };
   }, []);
 
+  //Hook for fetching FilteredOrderWell data
+  const [fetch] = useFetchFilteredOrderWellLazyQuery();
+
   async function fetchData() {
     try {
-      const response = await http.get(URL);
-      setUserData(response.data.results);
+      const { data: newData } = await fetch();
+      setUserData(newData?.filteredOrderWell.collection);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -42,34 +50,40 @@ const Table = () => {
 
   const ToggleUsername = () => {
     setIncludeUsername((state) => !state);
-    console.log(includeUsername);
   };
 
   const colDefs = useMemo(() => {
     return [
+      { field: "id" },
+      { field: "customerName", rowGroup: true },
+      { field: "driverName" },
+      { field: "type" },
       {
-        field: "name.first",
-        headerName: "First Name",
-        editable: true,
-        rowGroup: true,
+        field: "address",
+        headerName: "Address",
       },
-      { field: "id.name", headerName: "ID name" },
-      { field: "phone" },
+      { field: "customerErpId", headerName: "Erp ID" },
       {
-        field: "registered.date",
-        headerName: "Registered Date",
+        field: "deliveredGal",
       },
-      { field: "email" },
-      { field: "gender" },
-      { field: "dob.age", headerName: "Age" },
-      { field: "location.city", headerName: "City" },
+
+      { field: "hubName" },
+
       {
-        field: "login.username",
-        headerName: "username",
-        hide: !includeUsername, // if hide: false, It will hide the username
+        field: "shipToName",
       },
-      { field: "nat" },
-      { field: "cell" },
+      { field: "status" },
+      {
+        headerName: "Supplier",
+        children: [
+          { field: "supplierName", hide: !includeUsername },
+          { field: "PlannedGal", hide: !includeUsername },
+          { field: "_typename", hide: !includeUsername },
+        ],
+      },
+      // { field: "supplierName", hide: !includeUsername }, // if hide: false, It will hide the username
+      // { field: "PlannedGal", hide: !includeUsername }, // if hide: false, It will hide the username
+      // { field: "_typename", hide: !includeUsername }, // if hide: false, It will hide the username
     ];
   }, [includeUsername]);
 
@@ -79,10 +93,10 @@ const Table = () => {
 
   return (
     <>
-      <Button onClick={ToggleUsername}>Toggle Username</Button>
+      <Button onClick={ToggleUsername}>Toggle Supplier Name</Button>
       <div
         className="ag-theme-quartz-dark"
-        style={{ height: 400, width: "auto" }}
+        style={{ height: 600, width: "auto" }}
       >
         <AgGridReact
           ref={gridRef}
@@ -93,7 +107,8 @@ const Table = () => {
           maintainColumnOrder={true}
           pagination={true}
           animateRows={true}
-          autoGroupColumnDef={{ headerName: "Name" }}
+          paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+          paginationPageSize={20}
         />
       </div>
     </>
